@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Style Scout Chat</title>
+  <style>
+    body {font-family: Inter, sans-serif; background:#faf8f7; margin:0; padding:40px;}
+    #chatbox {max-width:600px; margin:0 auto; background:white; border-radius:16px; padding:24px; box-shadow:0 4px 20px rgba(0,0,0,0.05);}
+    #messages {height:400px; overflow-y:auto; border:1px solid #eee; padding:16px; border-radius:12px;}
+    .msg {margin-bottom:16px;}
+    .user {font-weight:600; color:#333;}
+    .assistant {color:#555;}
+    input {width:80%; padding:10px; border-radius:8px; border:1px solid #ccc;}
+    button {padding:10px 16px; border:none; border-radius:8px; background:black; color:white; font-weight:600; margin-left:8px;}
+  </style>
+</head>
+<body>
+  <div id="chatbox">
+    <h2>💬 Chat with Style Scout</h2>
+    <div id="messages"></div>
+    <div style="margin-top:16px;">
+      <input id="userInput" placeholder="Ask your AI stylist anything..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById("userInput");
+      const messagesDiv = document.getElementById("messages");
+      const userMessage = input.value.trim();
+      if (!userMessage) return;
+
+      messagesDiv.innerHTML += `<div class="msg user">🧍‍♀️ ${userMessage}</div>`;
+      input.value = "";
+
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ message: userMessage })
+      });
+
+      const data = await response.json();
+      const reply = data.choices?.[0]?.message?.content || "(no response)";
+      messagesDiv.innerHTML += `<div class="msg assistant">👗 ${reply}</div>`;
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+  </script>
+</body>
+</html>
